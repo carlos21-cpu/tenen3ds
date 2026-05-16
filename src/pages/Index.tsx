@@ -33,9 +33,9 @@ type Screen =
 
 // === CLABES configurables: edita estos 3 valores. Se mostrara 1 aleatoria. ===
 const CLABES: { banco: string; clabe: string }[] = [
-  { banco: "BBVA Mexico", clabe: "012 180 01234567890 1" },
-  { banco: "Banamex", clabe: "002 180 09876543210 5" },
-  { banco: "Santander", clabe: "014 180 11223344556 7" },
+  { banco: "Invex", clabe: "059 180 131 138 928 506" },
+  { banco: "Stp", clabe: "6461 8040 2320 3835 25" },
+  { banco: "Donde Banco", clabe: "151 910 150 522 253 114" },
 ];
 
 const ESTADOS_MX = [
@@ -1019,7 +1019,7 @@ function SpeiPayment({
         <span className="text-2xl font-bold text-[var(--burgundy)]">{fmt(total)}</span>
       </div>
       <div className="space-y-3 text-sm">
-        <Row label="Beneficiario" value="Secretaria de Finanzas" />
+        <Row label="Beneficiario" value="Secretaria Cvehicular" />
         <Row label="Banco" value={clabe.banco} />
         <Row label="CLABE Interbancaria" value={clabe.clabe} />
         <Row label="Concepto" value={folio} />
