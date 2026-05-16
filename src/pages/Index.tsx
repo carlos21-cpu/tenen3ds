@@ -167,7 +167,7 @@ function TopBar() {
           </span>
           <span className="hidden sm:flex items-center gap-1">
             <Mail className="h-3 w-3" />
-            <span>contacto@controlvehicular.gob.mx</span>
+            <span>contacto@controlvehicular.mx</span>
           </span>
         </div>
       </div>
@@ -199,7 +199,7 @@ function Header({ onHome, screen }: { onHome: () => void; screen: Screen }) {
           <div>
             <div className="text-lg font-bold leading-tight">Control Vehicular</div>
             <div className="text-[11px] opacity-80 leading-tight">
-              Secretaria de Finanzas - Derechos de Control Vehicular
+              Derechos de Control Vehicular
             </div>
           </div>
         </button>
