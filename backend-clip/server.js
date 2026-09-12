@@ -144,6 +144,11 @@ app.get("/test-clip-url", async(_req, res) => {
         "https://api-gateway.clip.checkout.com",
         "https://checkout-api.clip.mx",
         "https://api.checkout.com",
+        "https://pago.clip.mx",
+        "https://dashboard.clip.mx",
+        "https://www.clip.mx",
+        "https://api-sandbox.clip.mx",
+        "https://sandbox-api.clip.mx",
     ];
 
     const results = await Promise.all(
