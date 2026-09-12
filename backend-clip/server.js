@@ -70,9 +70,6 @@ app.post("/api/clip/create-checkout", async(req, res) => {
                 error: `${frontendUrl}/pago-error?placa=${encodeURIComponent(placa)}&folio=${encodeURIComponent(folio)}`,
                 default: `${frontendUrl}/pago-default`,
             },
-            prevention_data: {
-                request_3ds: true,
-            },
         };
 
         console.log("Body enviado a Clip:", JSON.stringify(body, null, 2));
