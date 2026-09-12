@@ -51,16 +51,37 @@ app.post("/api/clip/create-checkout", async(req, res) => {
             });
         }
 
+        const frontendUrl = process.env.FRONTEND_URL || "https://tu-dominio.com";
+
+        const numericAmount = Number(amount);
+        if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+            return res.status(400).json({
+                success: false,
+                error: "Monto inválido.",
+            });
+        }
+
         const body = {
-            amount: Number(amount), // ejemplo: 1762.5
+            amount: numericAmount.toFixed(2),
             currency: "MXN",
-            purchase_description: description || `Pago control vehicular ${placa} - folio ${folio}`,
+            description: description || `Pago control vehicular ${placa} - folio ${folio}`,
+            order_id: String(folio),
             redirection_url: {
-                success: `https://tu-dominio.com/pago-exitoso?placa=${placa}&folio=${folio}`,
-                error: `https://tu-dominio.com/pago-error?placa=${placa}&folio=${folio}`,
-                default: `https://tu-dominio.com/pago-default`,
+                success: `${frontendUrl}/pago-exitoso?placa=${encodeURIComponent(placa)}&folio=${encodeURIComponent(folio)}`,
+                error: `${frontendUrl}/pago-error?placa=${encodeURIComponent(placa)}&folio=${encodeURIComponent(folio)}`,
+                default: `${frontendUrl}/pago-default`,
+            },
+            prevention_data: {
+                request_3ds: true,
             },
         };
+
+        console.log("Creando checkout Clip:", {
+            amount: body.amount,
+            placa,
+            folio,
+            estado,
+        });
 
         const clipRes = await fetch(`${clipBaseUrl}/v2/checkout`, {
             method: "POST",
@@ -80,30 +101,32 @@ app.post("/api/clip/create-checkout", async(req, res) => {
             return res.status(502).json({
                 success: false,
                 error: "Error al comunicarse con Clip.",
+                clipStatus: clipRes.status,
+                clipBody: text,
             });
         }
 
         const clipData = await clipRes.json();
         console.log("Respuesta Clip JSON:", clipData);
 
-        // La doc del Checkout v2 indica que se devuelve la URL de redirección/payment en la respuesta;
-        // revisa el nombre exacto (por ejemplo checkout_url, url, etc.). [web:245][web:270]
         const checkoutUrl =
             clipData.checkout_url ||
             clipData.payment_request_url ||
             clipData.url;
 
         if (!checkoutUrl) {
-            console.error("Clip no devolvió URL de checkout");
+            console.error("Clip no devolvió URL de checkout", clipData);
             return res.status(500).json({
                 success: false,
                 error: "Clip no devolvió una URL de checkout.",
+                clipData,
             });
         }
 
         return res.json({
             success: true,
             checkout_url: checkoutUrl,
+            payment_request_id: clipData.payment_request_id,
         });
     } catch (err) {
         console.error("Error create-checkout:", err);
@@ -112,6 +135,35 @@ app.post("/api/clip/create-checkout", async(req, res) => {
             error: "Error interno al crear el enlace de pago.",
         });
     }
+});
+
+app.get("/test-clip-url", async(_req, res) => {
+    const urlsToTest = [
+        "https://api-gateway.clip.mx",
+        "https://api.clip.mx",
+        "https://api-gateway.clip.checkout.com",
+        "https://checkout-api.clip.mx",
+        "https://api.checkout.com",
+    ];
+
+    const results = await Promise.all(
+        urlsToTest.map(async(url) => {
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 5000);
+                const fetchRes = await fetch(url, {
+                    method: "HEAD",
+                    signal: controller.signal,
+                });
+                clearTimeout(timeout);
+                return { url, status: fetchRes.status, ok: fetchRes.ok, error: null };
+            } catch (err) {
+                return { url, status: null, ok: false, error: err.message };
+            }
+        })
+    );
+
+    res.json({ results });
 });
 
 app.listen(PORT, () => {
