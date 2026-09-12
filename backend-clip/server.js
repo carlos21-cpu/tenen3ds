@@ -31,7 +31,7 @@ function getClipAuthHeader() {
 
 app.post("/api/clip/create-checkout", async(req, res) => {
     try {
-        const { amount, placa, folio, estado, description } = req.body;
+        const { amount, placa, placa, folio, estado, description } = req.body;
 
         if (!amount || !placa || !folio) {
             return res.status(400).json({
@@ -69,6 +69,9 @@ app.post("/api/clip/create-checkout", async(req, res) => {
                 success: `${frontendUrl}/pago-exitoso?placa=${encodeURIComponent(placa)}&folio=${encodeURIComponent(folio)}`,
                 error: `${frontendUrl}/pago-error?placa=${encodeURIComponent(placa)}&folio=${encodeURIComponent(folio)}`,
                 default: `${frontendUrl}/pago-default`,
+            },
+            prevention_data: {
+                request_3ds: true,
             },
         };
 
