@@ -65,15 +65,7 @@ app.post("/api/clip/create-checkout", async(req, res) => {
             amount: numericAmount,
             currency: "MXN",
             description: description || `Pago control vehicular ${placa} - folio ${folio}`,
-            order_id: String(folio),
-            redirection_url: {
-                success: `${frontendUrl}/pago-exitoso?placa=${encodeURIComponent(placa)}&folio=${encodeURIComponent(folio)}`,
-                error: `${frontendUrl}/pago-error?placa=${encodeURIComponent(placa)}&folio=${encodeURIComponent(folio)}`,
-                default: `${frontendUrl}/pago-default`,
-            },
-            prevention_data: {
-                request_3ds: true,
-            },
+            redirection_url: `${frontendUrl}/pago-exitoso?placa=${encodeURIComponent(placa)}&folio=${encodeURIComponent(folio)}`,
         };
 
         console.log("Body enviado a Clip:", JSON.stringify(body, null, 2));
