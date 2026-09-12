@@ -65,7 +65,7 @@ app.post("/api/clip/create-checkout", async(req, res) => {
             amount: numericAmount.toFixed(2),
             currency: "MXN",
             description: description || `Pago control vehicular ${placa} - folio ${folio}`,
-            redirection_url: `${frontendUrl}/pago-exitoso?placa=${encodeURIComponent(placa)}&folio=${encodeURIComponent(folio)}`,
+            redirect_url: `${frontendUrl}/pago-exitoso?placa=${encodeURIComponent(placa)}&folio=${encodeURIComponent(folio)}`,
         };
 
         console.log("Body enviado a Clip:", JSON.stringify(body, null, 2));
