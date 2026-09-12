@@ -31,7 +31,7 @@ function getClipAuthHeader() {
 
 app.post("/api/clip/create-checkout", async(req, res) => {
     try {
-        const { amount, placa, placa, folio, estado, description } = req.body;
+        const { amount, placa, folio, estado, description } = req.body;
 
         if (!amount || !placa || !folio) {
             return res.status(400).json({
