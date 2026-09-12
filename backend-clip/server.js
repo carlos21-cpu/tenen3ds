@@ -62,7 +62,7 @@ app.post("/api/clip/create-checkout", async(req, res) => {
         }
 
         const body = {
-            amount: numericAmount.toFixed(2),
+            amount: numericAmount,
             currency: "MXN",
             description: description || `Pago control vehicular ${placa} - folio ${folio}`,
             order_id: String(folio),
@@ -76,12 +76,7 @@ app.post("/api/clip/create-checkout", async(req, res) => {
             },
         };
 
-        console.log("Creando checkout Clip:", {
-            amount: body.amount,
-            placa,
-            folio,
-            estado,
-        });
+        console.log("Body enviado a Clip:", JSON.stringify(body, null, 2));
 
         const clipRes = await fetch(`${clipBaseUrl}/v2/checkout`, {
             method: "POST",
@@ -149,6 +144,7 @@ app.get("/test-clip-url", async(_req, res) => {
         "https://www.clip.mx",
         "https://api-sandbox.clip.mx",
         "https://sandbox-api.clip.mx",
+        "https://api.payclip.com",
     ];
 
     const results = await Promise.all(
