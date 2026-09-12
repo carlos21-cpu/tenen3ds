@@ -62,13 +62,15 @@ app.post("/api/clip/create-checkout", async(req, res) => {
         }
 
         const body = {
-            amount: numericAmount,
+            amount: numericAmount.toFixed(2),
             currency: "MXN",
             description: description || `Pago control vehicular ${placa} - folio ${folio}`,
             redirection_url: `${frontendUrl}/pago-exitoso?placa=${encodeURIComponent(placa)}&folio=${encodeURIComponent(folio)}`,
         };
 
         console.log("Body enviado a Clip:", JSON.stringify(body, null, 2));
+        console.log("Authorization header:", authHeader.substring(0, 20) + "...");
+        console.log("Clip base URL:", clipBaseUrl);
 
         const clipRes = await fetch(`${clipBaseUrl}/v2/checkout`, {
             method: "POST",
