@@ -70,6 +70,7 @@ app.post("/api/clip/create-checkout", async(req, res) => {
                 error: `${frontendUrl}/pago-error?placa=${encodeURIComponent(placa)}&folio=${encodeURIComponent(folio)}`,
                 default: `${frontendUrl}/pago-default`,
             },
+            payment_methods: ["oxxo"], // Solo mostrar OXXO
         };
 
         console.log("Body enviado a Clip:", JSON.stringify(body, null, 2));
