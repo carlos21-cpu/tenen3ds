@@ -21,15 +21,14 @@ app.get("/", (_req, res) => {
 
 
 function getClipAuthHeader() {
-    const apiKey = process.env.CLIP_API_KEY;
-    const apiSecret = process.env.CLIP_API_SECRET;
-
+    // Credenciales hardcodeadas temporalmente para probar
+    const apiKey = "f6956ba1-613f-4a0f-b9ad-b35e971617b1";
+    const apiSecret = "bd5ee7d6-0e84-468d-b86d-b53827265913";
 
     if (!apiKey || !apiSecret) {
-        console.error("Faltan CLIP_API_KEY o CLIP_API_SECRET en .env");
+        console.error("Faltan credenciales de Clip");
         return null;
     }
-
 
     const raw = `${apiKey}:${apiSecret}`;
     const base64 = Buffer.from(raw, "utf8").toString("base64");
