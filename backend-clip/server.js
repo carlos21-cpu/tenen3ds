@@ -3,65 +3,86 @@ import cors from "cors";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
 
+
 dotenv.config();
+
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+
 app.use(cors());
 app.use(express.json());
+
 
 app.get("/", (_req, res) => {
     res.json({ ok: true, message: "Backend Clip funcionando" });
 });
 
+
 function getClipAuthHeader() {
     const apiKey = process.env.CLIP_API_KEY;
     const apiSecret = process.env.CLIP_API_SECRET;
+
 
     if (!apiKey || !apiSecret) {
         console.error("Faltan CLIP_API_KEY o CLIP_API_SECRET en .env");
         return null;
     }
 
+
     const raw = `${apiKey}:${apiSecret}`;
     const base64 = Buffer.from(raw, "utf8").toString("base64");
     return `Basic ${base64}`;
 }
 
-// Endpoint para recibir webhooks de Clip
+
+// Endpoint para recibir webhooks de Clip v3
 app.post("/api/clip/webhook", (req, res) => {
     const webhookData = req.body;
 
-    console.log("=== WEBHOOK DE CLIP RECIBIDO ===");
-    console.log("Tipo de evento:", webhookData.event_type || webhookData.type || "test");
-    console.log("Datos:", JSON.stringify(webhookData, null, 2));
+    console.log("=== WEBHOOK DE CLIP v3 RECIBIDO ===");
+    console.log("Fecha:", new Date().toISOString());
+    console.log("Event type:", webhookData.event_type);
+    console.log("Status:", webhookData.status);
+    console.log("Payment ID:", webhookData.id);
+    console.log("Amount:", webhookData.amount);
+    console.log("Currency:", webhookData.currency);
+    console.log("Decline reason:", webhookData.decline_reason || "N/A");
+    console.log("Decline code:", webhookData.decline_code || "N/A");
+    console.log("Decline message:", webhookData.decline_message || "N/A");
+    console.log("Metadata:", webhookData.metadata || "N/A");
+    console.log("Datos completos:", JSON.stringify(webhookData, null, 2));
 
-    // Detectar tipo de evento
-    const eventType = webhookData.event_type || webhookData.type;
+    const eventType = webhookData.event_type;
     const status = webhookData.status;
 
-    // Manejar diferentes formatos de webhook
-    if (eventType === "payment.completed" || status === "PAID" || webhookData.receipt_no) {
-        console.log("✅ Pago completado/confirmado");
-        console.log("Transaction ID:", webhookData.transaction_id || webhookData.id);
-        console.log("Amount:", webhookData.amount);
+    if (eventType === "payment.completed" || status === "PAID") {
+        console.log("✅✅✅ PAGO COMPLETADO ✅✅✅");
+        console.log("Payment ID:", webhookData.id);
+        console.log("Amount:", webhookData.amount, webhookData.currency);
         console.log("Receipt:", webhookData.receipt_no || "N/A");
-
-        // Aquí actualizas tu base de datos, envías email, etc.
-        // Ejemplo: await updatePaymentStatus(webhookData.transaction_id, 'completed');
-    } else if (eventType === "payment.failed" || status === "FAILED") {
-        console.log("❌ Pago fallido");
-        console.log("Transaction ID:", webhookData.transaction_id || webhookData.id);
-    } else if (!eventType && webhookData.merchant_name === "TestMerchant") {
-        console.log("🧪 Notificación de prueba de Clip");
+    } else if (eventType === "payment.failed" || status === "FAILED" || status === "DECLINED") {
+        console.log("❌❌❌ PAGO FALLIDO/DECLINADO ❌❌❌");
+        console.log("Payment ID:", webhookData.id);
+        console.log("Amount:", webhookData.amount, webhookData.currency);
+        console.log("RAZÓN:", webhookData.decline_reason || "No especificada");
+        console.log("CÓDIGO:", webhookData.decline_code || "No especificado");
+        console.log("MENSAJE:", webhookData.decline_message || "No especificado");
+    } else if (status === "PENDING") {
+        console.log("⏳ PAGO PENDIENTE");
+        console.log("Payment ID:", webhookData.id);
+        console.log("Método:", webhookData.payment_method || "No especificado");
+    } else if (status === "EXPIRED") {
+        console.log("⌛ PAGO EXPIRADO");
+        console.log("Payment ID:", webhookData.id);
     } else {
-        console.log("📩 Otro tipo de evento:", eventType || "desconocido");
+        console.log("📩 OTRO EVENTO:", eventType || "desconocido");
     }
 
-    // Responder inmediatamente a Clip
     res.status(200).json({ received: true });
 });
+
 
 app.post("/api/clip/create-checkout", async(req, res) => {
     try {
@@ -74,11 +95,10 @@ app.post("/api/clip/create-checkout", async(req, res) => {
             });
         }
 
-        const clipBaseUrl = process.env.CLIP_BASE_URL;
         const authHeader = getClipAuthHeader();
 
-        if (!clipBaseUrl || !authHeader) {
-            console.error("Falta CLIP_BASE_URL o token de autenticación");
+        if (!authHeader) {
+            console.error("Falta token de autenticación de Clip");
             return res.status(500).json({
                 success: false,
                 error: "Configuración incompleta de Clip.",
@@ -95,24 +115,33 @@ app.post("/api/clip/create-checkout", async(req, res) => {
             });
         }
 
+        // Body para Clip v3
         const body = {
             amount: numericAmount,
             currency: "MXN",
-            purchase_description: description || `Pago control vehicular ${placa} - folio ${folio}`,
-            redirection_url: {
+            concept: description || `Pago control vehicular ${placa} - folio ${folio}`,
+            redirect_urls: {
                 success: `${frontendUrl}/pago-exitoso?placa=${encodeURIComponent(placa)}&folio=${encodeURIComponent(folio)}`,
                 error: `${frontendUrl}/pago-error?placa=${encodeURIComponent(placa)}&folio=${encodeURIComponent(folio)}`,
                 default: `${frontendUrl}/pago-default`,
             },
+            metadata: {
+                placa: placa,
+                folio: folio,
+                estado: estado || ""
+            }
         };
 
+        console.log("=== CREANDO PAGO CON CLIP v3 ===");
         console.log("Body enviado a Clip:", JSON.stringify(body, null, 2));
 
-        const clipRes = await fetch(`${clipBaseUrl}/v2/checkout`, {
+        // Solicitud a Clip v3
+        const clipRes = await fetch('https://api.payclip.com/v3/payment_requests', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: authHeader,
+                "Clip-API-Version": "3",
                 accept: "application/json",
             },
             body: JSON.stringify(body),
@@ -132,12 +161,9 @@ app.post("/api/clip/create-checkout", async(req, res) => {
         }
 
         const clipData = await clipRes.json();
-        console.log("Respuesta Clip JSON:", clipData);
+        console.log("Respuesta Clip JSON:", JSON.stringify(clipData, null, 2));
 
-        const checkoutUrl =
-            clipData.checkout_url ||
-            clipData.payment_request_url ||
-            clipData.url;
+        const checkoutUrl = clipData.checkout_url || clipData.payment_request_url;
 
         if (!checkoutUrl) {
             console.error("Clip no devolvió URL de checkout", clipData);
@@ -151,7 +177,9 @@ app.post("/api/clip/create-checkout", async(req, res) => {
         return res.json({
             success: true,
             checkout_url: checkoutUrl,
-            payment_request_id: clipData.payment_request_id,
+            payment_request_id: clipData.id,
+            expires_at: clipData.expires_at,
+            status: clipData.status,
         });
     } catch (err) {
         console.error("Error create-checkout:", err);
@@ -161,6 +189,7 @@ app.post("/api/clip/create-checkout", async(req, res) => {
         });
     }
 });
+
 
 app.get("/test-clip-url", async(_req, res) => {
     const urlsToTest = [
@@ -176,6 +205,7 @@ app.get("/test-clip-url", async(_req, res) => {
         "https://sandbox-api.clip.mx",
         "https://api.payclip.com",
     ];
+
 
     const results = await Promise.all(
         urlsToTest.map(async(url) => {
@@ -194,8 +224,10 @@ app.get("/test-clip-url", async(_req, res) => {
         })
     );
 
+
     res.json({ results });
 });
+
 
 app.listen(PORT, () => {
     console.log(`Servidor escuchando en http://localhost:${PORT}`);
