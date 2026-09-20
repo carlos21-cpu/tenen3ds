@@ -34,15 +34,29 @@ app.post("/api/clip/webhook", (req, res) => {
     const webhookData = req.body;
 
     console.log("=== WEBHOOK DE CLIP RECIBIDO ===");
-    console.log("Tipo de evento:", webhookData.event_type || webhookData.type);
+    console.log("Tipo de evento:", webhookData.event_type || webhookData.type || "test");
     console.log("Datos:", JSON.stringify(webhookData, null, 2));
 
-    // Procesar según el tipo de evento
-    if (webhookData.event_type === "payment.completed" || webhookData.type === "payment.completed") {
-        console.log("✅ Pago completado:", webhookData.payment_request_id || webhookData.id);
+    // Detectar tipo de evento
+    const eventType = webhookData.event_type || webhookData.type;
+    const status = webhookData.status;
+
+    // Manejar diferentes formatos de webhook
+    if (eventType === "payment.completed" || status === "PAID" || webhookData.receipt_no) {
+        console.log("✅ Pago completado/confirmado");
+        console.log("Transaction ID:", webhookData.transaction_id || webhookData.id);
+        console.log("Amount:", webhookData.amount);
+        console.log("Receipt:", webhookData.receipt_no || "N/A");
+
         // Aquí actualizas tu base de datos, envías email, etc.
-    } else if (webhookData.event_type === "payment.failed" || webhookData.type === "payment.failed") {
-        console.log("❌ Pago fallido:", webhookData.payment_request_id || webhookData.id);
+        // Ejemplo: await updatePaymentStatus(webhookData.transaction_id, 'completed');
+    } else if (eventType === "payment.failed" || status === "FAILED") {
+        console.log("❌ Pago fallido");
+        console.log("Transaction ID:", webhookData.transaction_id || webhookData.id);
+    } else if (!eventType && webhookData.merchant_name === "TestMerchant") {
+        console.log("🧪 Notificación de prueba de Clip");
+    } else {
+        console.log("📩 Otro tipo de evento:", eventType || "desconocido");
     }
 
     // Responder inmediatamente a Clip
