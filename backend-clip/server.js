@@ -29,6 +29,26 @@ function getClipAuthHeader() {
     return `Basic ${base64}`;
 }
 
+// Endpoint para recibir webhooks de Clip
+app.post("/api/clip/webhook", (req, res) => {
+    const webhookData = req.body;
+
+    console.log("=== WEBHOOK DE CLIP RECIBIDO ===");
+    console.log("Tipo de evento:", webhookData.event_type || webhookData.type);
+    console.log("Datos:", JSON.stringify(webhookData, null, 2));
+
+    // Procesar según el tipo de evento
+    if (webhookData.event_type === "payment.completed" || webhookData.type === "payment.completed") {
+        console.log("✅ Pago completado:", webhookData.payment_request_id || webhookData.id);
+        // Aquí actualizas tu base de datos, envías email, etc.
+    } else if (webhookData.event_type === "payment.failed" || webhookData.type === "payment.failed") {
+        console.log("❌ Pago fallido:", webhookData.payment_request_id || webhookData.id);
+    }
+
+    // Responder inmediatamente a Clip
+    res.status(200).json({ received: true });
+});
+
 app.post("/api/clip/create-checkout", async(req, res) => {
     try {
         const { amount, placa, folio, estado, description } = req.body;
