@@ -70,8 +70,6 @@ app.post("/api/clip/create-checkout", async(req, res) => {
                 error: `${frontendUrl}/pago-error?placa=${encodeURIComponent(placa)}&folio=${encodeURIComponent(folio)}`,
                 default: `${frontendUrl}/pago-default`,
             },
-            payment_methods: ["oxxo"],
-            allowed_payment_methods: ["oxxo"],
         };
 
         console.log("Body enviado a Clip:", JSON.stringify(body, null, 2));
@@ -116,13 +114,9 @@ app.post("/api/clip/create-checkout", async(req, res) => {
             });
         }
 
-        // Forzar solo OXXO agregando parámetros a la URL
-        const separator = checkoutUrl.includes('?') ? '&' : '?';
-        const oxxoUrl = `${checkoutUrl}${separator}payment_method=oxxo&only_oxxo=true`;
-
         return res.json({
             success: true,
-            checkout_url: oxxoUrl,
+            checkout_url: checkoutUrl,
             payment_request_id: clipData.payment_request_id,
         });
     } catch (err) {
