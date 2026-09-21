@@ -21,18 +21,18 @@ app.get("/", (_req, res) => {
 
 
 function getClipAuthHeader() {
-    // Credenciales hardcodeadas temporalmente
-    const apiKey = "d7f9b539-4104-4ba1-a2df-eb695ac42793";
-    const apiSecret = "0cd67525-4530-46d2-86be-e04eaefe9608";
+    // Credenciales hardcodeadas temporalmente (formato UUID)
+    const apiKey = "d7f9b539-4104-4ba1-a2df-eb695ac42793"; // Tu API Key real aquí
+    const apiSecret = "0cd67525-4530-46d2-86be-e04eaefe9608"; // Tu API Secret real aquí
 
     if (!apiKey || !apiSecret) {
         console.error("Faltan credenciales de Clip");
         return null;
     }
 
-    const raw = `${apiKey}:${apiSecret}`;
-    const base64 = Buffer.from(raw, "utf8").toString("base64");
-    return `Basic ${base64}`;
+    // Usar Bearer token en lugar de Basic Auth
+    const token = `${apiKey}:${apiSecret}`;
+    return `Bearer ${token}`;
 }
 
 
@@ -133,8 +133,9 @@ app.post("/api/clip/create-checkout", async(req, res) => {
 
         console.log("=== CREANDO PAGO CON CLIP v3 ===");
         console.log("Body enviado a Clip:", JSON.stringify(body, null, 2));
+        console.log("Auth Header:", authHeader.substring(0, 30) + "...");
 
-        // Endpoint CORRECTO para Clip v3
+        // Endpoint para Clip v3
         const clipRes = await fetch('https://api.payclip.com/v3/payment_requests', {
             method: "POST",
             headers: {
