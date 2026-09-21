@@ -20,6 +20,22 @@ app.get("/", (_req, res) => {
 });
 
 
+function getClipAuthHeader() {
+    const apiKey = "d7f9b539-4104-4ba1-a2df-eb695ac42793"; // Tu API Key
+    const apiSecret = "0cd67525-4530-46d2-86be-e04eaefe9608"; // Tu API Secret aquí
+
+    if (!apiKey || !apiSecret) {
+        console.error("Faltan credenciales de Clip");
+        return null;
+    }
+
+    // Basic Auth con Base64 (como indica Clip)
+    const raw = `${apiKey}:${apiSecret}`;
+    const base64 = Buffer.from(raw, "utf8").toString("base64");
+    return `Basic ${base64}`;
+}
+
+
 // Endpoint para recibir webhooks de Clip v2
 app.post("/api/clip/webhook", (req, res) => {
     const webhookData = req.body;
@@ -68,7 +84,17 @@ app.post("/api/clip/create-checkout", async(req, res) => {
         }
 
 
-        const clipBaseUrl = process.env.CLIP_BASE_URL || "https://api.payclip.com";
+        const clipBaseUrl = "https://api.payclip.com";
+        const authHeader = getClipAuthHeader();
+
+
+        if (!authHeader) {
+            console.error("Falta autenticación de Clip");
+            return res.status(500).json({
+                success: false,
+                error: "Configuración incompleta de Clip.",
+            });
+        }
 
 
         const frontendUrl = process.env.FRONTEND_URL || "https://tu-dominio.com";
@@ -95,16 +121,17 @@ app.post("/api/clip/create-checkout", async(req, res) => {
         };
 
 
-        console.log("=== CREANDO PAGO CON CLIP v2 (SIN AUTH) ===");
+        console.log("=== CREANDO PAGO CON CLIP v2 ===");
         console.log("Base URL:", clipBaseUrl);
         console.log("Body enviado a Clip:", JSON.stringify(body, null, 2));
+        console.log("Auth Header:", authHeader.substring(0, 30) + "...");
 
 
-        // SIN header de Authorization (como el ejemplo de curl de Clip)
         const clipRes = await fetch(`${clipBaseUrl}/v2/checkout`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                Authorization: authHeader, // Basic Auth con Base64
                 accept: "application/json",
             },
             body: JSON.stringify(body),
