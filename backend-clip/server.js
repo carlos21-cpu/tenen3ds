@@ -21,18 +21,15 @@ app.get("/", (_req, res) => {
 
 
 function getClipAuthHeader() {
-    const apiKey = "d7f9b539-4104-4ba1-a2df-eb695ac42793"; // Tu API Key
-    const apiSecret = "0cd67525-4530-46d2-86be-e04eaefe9608"; // Tu API Secret aquí
+    const token = process.env.CLIP_AUTH_TOKEN;
 
-    if (!apiKey || !apiSecret) {
-        console.error("Faltan credenciales de Clip");
+    if (!token) {
+        console.error("Falta CLIP_AUTH_TOKEN en variables de entorno");
         return null;
     }
 
-    // Basic Auth con Base64 (como indica Clip)
-    const raw = `${apiKey}:${apiSecret}`;
-    const base64 = Buffer.from(raw, "utf8").toString("base64");
-    return `Basic ${base64}`;
+    console.log("Usando CLIP_AUTH_TOKEN:", token.substring(0, 20) + "...");
+    return token;
 }
 
 
@@ -131,7 +128,7 @@ app.post("/api/clip/create-checkout", async(req, res) => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: authHeader, // Basic Auth con Base64
+                Authorization: authHeader,
                 accept: "application/json",
             },
             body: JSON.stringify(body),
