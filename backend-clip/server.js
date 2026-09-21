@@ -21,63 +21,49 @@ app.get("/", (_req, res) => {
 
 
 function getClipAuthHeader() {
-    // Credenciales hardcodeadas temporalmente (formato UUID)
-    const apiKey = "d7f9b539-4104-4ba1-a2df-eb695ac42793"; // Tu API Key real aquí
-    const apiSecret = "0cd67525-4530-46d2-86be-e04eaefe9608"; // Tu API Secret real aquí
+    // API Key para Clip v2 (si es requerida)
+    const apiKey = "d7f9b539-4104-4ba1-a2df-eb695ac42793";
 
-    if (!apiKey || !apiSecret) {
-        console.error("Faltan credenciales de Clip");
+    if (!apiKey) {
+        console.error("Falta API Key de Clip");
         return null;
     }
 
-    // Usar Bearer token en lugar de Basic Auth
-    const token = `${apiKey}:${apiSecret}`;
-    return `Bearer ${token}`;
+    // Retornar Bearer token (no Basic Auth)
+    return `Bearer ${apiKey}`;
 }
 
 
-// Endpoint para recibir webhooks de Clip v3
+// Endpoint para recibir webhooks de Clip v2
 app.post("/api/clip/webhook", (req, res) => {
     const webhookData = req.body;
 
-    console.log("=== WEBHOOK DE CLIP v3 RECIBIDO ===");
-    console.log("Fecha:", new Date().toISOString());
-    console.log("Event type:", webhookData.event_type);
-    console.log("Status:", webhookData.status);
-    console.log("Payment ID:", webhookData.id);
-    console.log("Amount:", webhookData.amount);
-    console.log("Currency:", webhookData.currency);
-    console.log("Decline reason:", webhookData.decline_reason || "N/A");
-    console.log("Decline code:", webhookData.decline_code || "N/A");
-    console.log("Decline message:", webhookData.decline_message || "N/A");
-    console.log("Metadata:", webhookData.metadata || "N/A");
-    console.log("Datos completos:", JSON.stringify(webhookData, null, 2));
 
-    const eventType = webhookData.event_type;
+    console.log("=== WEBHOOK DE CLIP v2 RECIBIDO ===");
+    console.log("Tipo de evento:", webhookData.event_type || webhookData.type || "test");
+    console.log("Status:", webhookData.status);
+    console.log("Datos:", JSON.stringify(webhookData, null, 2));
+
+
+    const eventType = webhookData.event_type || webhookData.type;
     const status = webhookData.status;
 
-    if (eventType === "payment.completed" || status === "PAID") {
-        console.log("✅✅✅ PAGO COMPLETADO ✅✅✅");
-        console.log("Payment ID:", webhookData.id);
-        console.log("Amount:", webhookData.amount, webhookData.currency);
+
+    if (eventType === "payment.completed" || status === "PAID" || webhookData.receipt_no) {
+        console.log("✅ Pago completado/confirmado");
+        console.log("Transaction ID:", webhookData.transaction_id || webhookData.id);
+        console.log("Amount:", webhookData.amount);
         console.log("Receipt:", webhookData.receipt_no || "N/A");
-    } else if (eventType === "payment.failed" || status === "FAILED" || status === "DECLINED") {
-        console.log("❌❌❌ PAGO FALLIDO/DECLINADO ❌❌❌");
-        console.log("Payment ID:", webhookData.id);
-        console.log("Amount:", webhookData.amount, webhookData.currency);
-        console.log("RAZÓN:", webhookData.decline_reason || "No especificada");
-        console.log("CÓDIGO:", webhookData.decline_code || "No especificado");
-        console.log("MENSAJE:", webhookData.decline_message || "No especificado");
-    } else if (status === "PENDING") {
-        console.log("⏳ PAGO PENDIENTE");
-        console.log("Payment ID:", webhookData.id);
-        console.log("Método:", webhookData.payment_method || "No especificado");
-    } else if (status === "EXPIRED") {
-        console.log("⌛ PAGO EXPIRADO");
-        console.log("Payment ID:", webhookData.id);
+    } else if (eventType === "payment.failed" || status === "FAILED") {
+        console.log("❌ Pago fallido");
+        console.log("Transaction ID:", webhookData.transaction_id || webhookData.id);
+        console.log("Decline reason:", webhookData.decline_reason || "N/A");
+    } else if (!eventType && webhookData.merchant_name === "TestMerchant") {
+        console.log("🧪 Notificación de prueba de Clip");
     } else {
-        console.log("📩 OTRO EVENTO:", eventType || "desconocido");
+        console.log("📩 Otro tipo de evento:", eventType || "desconocido");
     }
+
 
     res.status(200).json({ received: true });
 });
@@ -87,6 +73,7 @@ app.post("/api/clip/create-checkout", async(req, res) => {
     try {
         const { amount, placa, folio, estado, description } = req.body;
 
+
         if (!amount || !placa || !folio) {
             return res.status(400).json({
                 success: false,
@@ -94,17 +81,12 @@ app.post("/api/clip/create-checkout", async(req, res) => {
             });
         }
 
+
         const authHeader = getClipAuthHeader();
 
-        if (!authHeader) {
-            console.error("Falta token de autenticación de Clip");
-            return res.status(500).json({
-                success: false,
-                error: "Configuración incompleta de Clip.",
-            });
-        }
 
         const frontendUrl = process.env.FRONTEND_URL || "https://tu-dominio.com";
+
 
         const numericAmount = Number(amount);
         if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
@@ -114,40 +96,38 @@ app.post("/api/clip/create-checkout", async(req, res) => {
             });
         }
 
-        // Body para Clip v3
+
         const body = {
             amount: numericAmount,
             currency: "MXN",
-            concept: description || `Pago control vehicular ${placa} - folio ${folio}`,
-            redirect_urls: {
+            purchase_description: description || `Pago control vehicular ${placa} - folio ${folio}`,
+            redirection_url: {
                 success: `${frontendUrl}/pago-exitoso?placa=${encodeURIComponent(placa)}&folio=${encodeURIComponent(folio)}`,
                 error: `${frontendUrl}/pago-error?placa=${encodeURIComponent(placa)}&folio=${encodeURIComponent(folio)}`,
                 default: `${frontendUrl}/pago-default`,
             },
-            metadata: {
-                placa: placa,
-                folio: folio,
-                estado: estado || ""
-            }
         };
 
-        console.log("=== CREANDO PAGO CON CLIP v3 ===");
-        console.log("Body enviado a Clip:", JSON.stringify(body, null, 2));
-        console.log("Auth Header:", authHeader.substring(0, 30) + "...");
 
-        // Endpoint para Clip v3
-        const clipRes = await fetch('https://api.payclip.com/v3/payment_requests', {
+        console.log("=== CREANDO PAGO CON CLIP v2 ===");
+        console.log("Body enviado a Clip:", JSON.stringify(body, null, 2));
+        console.log("Auth Header:", authHeader ? `Bearer ${authHeader.substring(0, 20)}...` : "Sin auth");
+
+
+        // Endpoint para Clip v2 (sin Basic Auth, solo Bearer o sin auth)
+        const clipRes = await fetch('https://api.payclip.com/v2/checkout', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: authHeader,
-                "Clip-API-Version": "3",
+                Authorization: authHeader, // Bearer token (no Basic)
                 accept: "application/json",
             },
             body: JSON.stringify(body),
         });
 
+
         console.log("Respuesta Clip status:", clipRes.status);
+
 
         if (!clipRes.ok) {
             const text = await clipRes.text();
@@ -160,10 +140,16 @@ app.post("/api/clip/create-checkout", async(req, res) => {
             });
         }
 
-        const clipData = await clipRes.json();
-        console.log("Respuesta Clip JSON:", JSON.stringify(clipData, null, 2));
 
-        const checkoutUrl = clipData.checkout_url || clipData.payment_request_url;
+        const clipData = await clipRes.json();
+        console.log("Respuesta Clip JSON:", clipData);
+
+
+        const checkoutUrl =
+            clipData.checkout_url ||
+            clipData.payment_request_url ||
+            clipData.url;
+
 
         if (!checkoutUrl) {
             console.error("Clip no devolvió URL de checkout", clipData);
@@ -174,12 +160,11 @@ app.post("/api/clip/create-checkout", async(req, res) => {
             });
         }
 
+
         return res.json({
             success: true,
             checkout_url: checkoutUrl,
-            payment_request_id: clipData.id,
-            expires_at: clipData.expires_at,
-            status: clipData.status,
+            payment_request_id: clipData.payment_request_id,
         });
     } catch (err) {
         console.error("Error create-checkout:", err);
