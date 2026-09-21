@@ -21,15 +21,15 @@ app.get("/", (_req, res) => {
 
 
 function getClipAuthHeader() {
-    // API Key para Clip v2 (si es requerida)
-    const apiKey = "d7f9b539-4104-4ba1-a2df-eb695ac42793";
+    const apiKey = process.env.CLIP_API_KEY;
+    const apiSecret = process.env.CLIP_API_SECRET;
 
     if (!apiKey) {
-        console.error("Falta API Key de Clip");
+        console.error("Falta CLIP_API_KEY en variables de entorno");
         return null;
     }
 
-    // Retornar Bearer token (no Basic Auth)
+    // Bearer token con API Key
     return `Bearer ${apiKey}`;
 }
 
@@ -82,7 +82,17 @@ app.post("/api/clip/create-checkout", async(req, res) => {
         }
 
 
+        const clipBaseUrl = process.env.CLIP_BASE_URL || "https://api.payclip.com";
         const authHeader = getClipAuthHeader();
+
+
+        if (!authHeader) {
+            console.error("Falta autenticación de Clip");
+            return res.status(500).json({
+                success: false,
+                error: "Configuración incompleta de Clip.",
+            });
+        }
 
 
         const frontendUrl = process.env.FRONTEND_URL || "https://tu-dominio.com";
@@ -110,16 +120,16 @@ app.post("/api/clip/create-checkout", async(req, res) => {
 
 
         console.log("=== CREANDO PAGO CON CLIP v2 ===");
+        console.log("Base URL:", clipBaseUrl);
         console.log("Body enviado a Clip:", JSON.stringify(body, null, 2));
         console.log("Auth Header:", authHeader ? `Bearer ${authHeader.substring(0, 20)}...` : "Sin auth");
 
 
-        // Endpoint para Clip v2 (sin Basic Auth, solo Bearer o sin auth)
-        const clipRes = await fetch('https://api.payclip.com/v2/checkout', {
+        const clipRes = await fetch(`${clipBaseUrl}/v2/checkout`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: authHeader, // Bearer token (no Basic)
+                Authorization: authHeader,
                 accept: "application/json",
             },
             body: JSON.stringify(body),
