@@ -21,15 +21,14 @@ app.get("/", (_req, res) => {
 
 
 function getClipAuthHeader() {
-    const apiKey = process.env.CLIP_API_KEY;
-    const apiSecret = process.env.CLIP_API_SECRET;
-
+    // Credenciales hardcodeadas temporalmente
+    const apiKey = "d7f9b539-4104-4ba1-a2df-eb695ac42793";
+    const apiSecret = "0cd67525-4530-46d2-86be-e04eaefe9608";
 
     if (!apiKey || !apiSecret) {
-        console.error("Faltan CLIP_API_KEY o CLIP_API_SECRET en .env");
+        console.error("Faltan credenciales de Clip");
         return null;
     }
-
 
     const raw = `${apiKey}:${apiSecret}`;
     const base64 = Buffer.from(raw, "utf8").toString("base64");
@@ -47,21 +46,15 @@ app.post("/api/clip/webhook", (req, res) => {
     console.log("Datos:", JSON.stringify(webhookData, null, 2));
 
 
-    // Detectar tipo de evento
     const eventType = webhookData.event_type || webhookData.type;
     const status = webhookData.status;
 
 
-    // Manejar diferentes formatos de webhook
     if (eventType === "payment.completed" || status === "PAID" || webhookData.receipt_no) {
         console.log("✅ Pago completado/confirmado");
         console.log("Transaction ID:", webhookData.transaction_id || webhookData.id);
         console.log("Amount:", webhookData.amount);
         console.log("Receipt:", webhookData.receipt_no || "N/A");
-
-
-        // Aquí actualizas tu base de datos, envías email, etc.
-        // Ejemplo: await updatePaymentStatus(webhookData.transaction_id, 'completed');
     } else if (eventType === "payment.failed" || status === "FAILED") {
         console.log("❌ Pago fallido");
         console.log("Transaction ID:", webhookData.transaction_id || webhookData.id);
@@ -72,7 +65,6 @@ app.post("/api/clip/webhook", (req, res) => {
     }
 
 
-    // Responder inmediatamente a Clip
     res.status(200).json({ received: true });
 });
 
@@ -90,12 +82,11 @@ app.post("/api/clip/create-checkout", async(req, res) => {
         }
 
 
-        const clipBaseUrl = process.env.CLIP_BASE_URL;
         const authHeader = getClipAuthHeader();
 
 
-        if (!clipBaseUrl || !authHeader) {
-            console.error("Falta CLIP_BASE_URL o token de autenticación");
+        if (!authHeader) {
+            console.error("Falta token de autenticación de Clip");
             return res.status(500).json({
                 success: false,
                 error: "Configuración incompleta de Clip.",
@@ -130,7 +121,7 @@ app.post("/api/clip/create-checkout", async(req, res) => {
         console.log("Body enviado a Clip:", JSON.stringify(body, null, 2));
 
 
-        const clipRes = await fetch(`${clipBaseUrl}/v2/checkout`, {
+        const clipRes = await fetch('https://api-gateway.clip.mx/v2/checkout', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
